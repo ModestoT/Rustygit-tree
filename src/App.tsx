@@ -3,22 +3,20 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Tabs,
   Tab,
   Button,
   IconButton,
   Stack,
 } from "@mui/material";
-import { Inbox, Mail, ArrowForwardIos, Add, Close } from "@mui/icons-material";
+import { Add, Close } from "@mui/icons-material";
 import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
 import "./App.css";
 import { ReactElement, ReactNode, SyntheticEvent, useState } from "react";
 import SimpleDialog from "./Modal";
+import RepoView from "./RepoView";
+import { open } from "@tauri-apps/api/dialog";
+import { invoke } from "@tauri-apps/api";
 
 interface StyledTabsProps {
   children?: ReactNode;
@@ -41,19 +39,25 @@ interface TabPanelProps {
   value: number;
 }
 
-interface RepoTab {
+export interface RepoBranch {
+  name: string;
+  branch_type: "Local" | "Remote";
+}
+
+export interface RepoTab {
   id: number;
   name: string;
   repoPath?: string;
+  branchNames: RepoBranch[];
 }
+
+type RepoInitType = "Open" | "Clone" | "Create";
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
 });
-
-const drawerWidth = 180;
 
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -106,10 +110,13 @@ const StyledTab = styled((props: StyledTabProps) => (
   },
 }));
 
-function App() {
+const App = () => {
   const [selectedTab, setSelectedTab] = useState(1);
+  const [repoInitType, setRepoInitType] = useState<RepoInitType>("Open");
   const [showModal, setShowModal] = useState(false);
-  const [tabs, setTabs] = useState<RepoTab[]>([{ id: 1, name: "New Tab" }]);
+  const [tabs, setTabs] = useState<RepoTab[]>([
+    { id: 1, name: "New Tab", branchNames: [] },
+  ]);
 
   const handleSelectedTab = (_: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -121,6 +128,7 @@ function App() {
       {
         id: tabs.length + 1,
         name: "New Tab",
+        branchNames: [],
       },
     ]);
   const deleteTab = (event: SyntheticEvent, tab: RepoTab) => {
@@ -129,7 +137,7 @@ function App() {
     const tabsCopy = [...tabs];
     const foundindex = tabsCopy.findIndex((x) => x.id === tab.id);
 
-    if (!foundindex) return;
+    if (foundindex === -1) return;
 
     tabsCopy.splice(foundindex, 1);
 
@@ -140,9 +148,33 @@ function App() {
     }
   };
 
-  const openModal = () => setShowModal(true);
+  const openModal = (type: RepoInitType) => {
+    setShowModal(true);
+    setRepoInitType(type);
+  };
+
   const closeModal = () => setShowModal(false);
 
+  const openFileBrowser = async (tabId: number) => {
+    const selectedFolder = await open({
+      multiple: false,
+      directory: true,
+    });
+
+    if (!Array.isArray(selectedFolder) && selectedFolder !== null) {
+      const returnedValue: RepoBranch[] = await invoke("open_repo", {
+        path: selectedFolder,
+      });
+      const tabsCopy = [...tabs];
+      const foundIndex = tabsCopy.findIndex((x) => x.id === tabId);
+
+      tabsCopy[foundIndex].branchNames = returnedValue;
+      tabsCopy[foundIndex].repoPath = selectedFolder;
+      tabsCopy[foundIndex].name = selectedFolder.split("\\").pop() ?? "";
+
+      setTabs(tabsCopy);
+    }
+  };
   return (
     <ThemeProvider theme={darkTheme}>
       <Box>
@@ -186,61 +218,7 @@ function App() {
         {tabs.map((tab) => (
           <TabPanel value={selectedTab} index={tab.id} key={tab.id}>
             {tab.repoPath ? (
-              <>
-                <Box
-                  component="nav"
-                  sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-                >
-                  <Drawer
-                    variant="permanent"
-                    sx={{
-                      display: { xs: "none", sm: "block" },
-                      [`& .MuiDrawer-paper`]: {
-                        width: drawerWidth,
-                        boxSizing: "border-box",
-                      },
-                    }}
-                  >
-                    <Toolbar />
-                    <Box sx={{ overflow: "auto" }}>
-                      <List dense>
-                        {[
-                          "LOCAL",
-                          "REMOTE",
-                          "TAGS",
-                          "STASHES",
-                          "SUBMODULES",
-                        ].map((text, index) => (
-                          <ListItem
-                            key={text}
-                            secondaryAction={
-                              <ArrowForwardIos sx={{ fontSize: "medium" }} />
-                            }
-                            disableGutters
-                          >
-                            <ListItemIcon sx={{ minWidth: 30 }}>
-                              {index % 2 === 0 ? <Inbox /> : <Mail />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Box>
-                  </Drawer>
-                </Box>
-                <Box
-                  component="main"
-                  sx={{
-                    flexGrow: 1,
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                  }}
-                >
-                  <Toolbar />
-                  <Typography paragraph>
-                    Loading Repo from {tab.repoPath}
-                  </Typography>
-                </Box>
-              </>
+              <RepoView repo={tab} />
             ) : (
               <Box
                 component="main"
@@ -257,16 +235,26 @@ function App() {
                     variant="outlined"
                     color="secondary"
                     sx={{ color: "white" }}
-                    onClick={() => openModal()}
+                    onClick={() => openFileBrowser(tab.id)}
                   >
-                    Create Repo
+                    Open Repo
                   </Button>
                   <Button
                     variant="outlined"
                     color="secondary"
                     sx={{ color: "white" }}
+                    onClick={() => openModal("Clone")}
                   >
                     Clone Repo
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{ color: "white" }}
+                    onClick={() => openModal("Create")}
+                  >
+                    Create Repo
                   </Button>
                 </Stack>
               </Box>
@@ -275,10 +263,10 @@ function App() {
         ))}
       </Box>
       <SimpleDialog title="Repository" open={showModal} onClose={closeModal}>
-        <Typography>Test modal</Typography>
+        <Typography>{repoInitType}</Typography>
       </SimpleDialog>
     </ThemeProvider>
   );
-}
+};
 
 export default App;

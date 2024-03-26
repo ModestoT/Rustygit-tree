@@ -15,7 +15,7 @@ interface SimpleDialogProps {
   onClose: () => void;
 }
 
-function SimpleDialog(props: SimpleDialogProps) {
+const SimpleDialog = (props: SimpleDialogProps) => {
   const { onClose, open, children, title } = props;
 
   const handleClose = () => {
@@ -44,6 +44,6 @@ function SimpleDialog(props: SimpleDialogProps) {
       <DialogContent dividers>{children}</DialogContent>
     </Dialog>
   );
-}
+};
 
 export default SimpleDialog;
