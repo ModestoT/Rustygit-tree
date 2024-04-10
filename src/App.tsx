@@ -42,6 +42,7 @@ interface TabPanelProps {
 export interface RepoBranch {
   name: string;
   branch_type: "Local" | "Remote";
+  is_checked_out: boolean;
 }
 
 export interface RepoTab {

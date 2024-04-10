@@ -7,7 +7,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Stack,
   ListItemButton,
 } from "@mui/material";
 
@@ -22,6 +21,7 @@ import {
 } from "@mui/icons-material";
 import { RepoBranch, RepoTab } from "./App";
 import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api";
 
 const drawerWidth = 180;
 const navSections = [
@@ -52,6 +52,11 @@ type NavSections = (typeof navSections)[number];
 interface RepoViewProps {
   repo: RepoTab;
 }
+interface Commit {
+  id: string;
+  message: string;
+  author: string;
+}
 
 const BranchLabel = (props: {
   branch: RepoBranch;
@@ -77,6 +82,7 @@ const RepoView = (props: RepoViewProps) => {
   const { repo } = props;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [branchCommits, setBranchCommits] = useState<Commit[]>([]);
 
   useEffect(() => {
     repo.branchNames.every((branch, index) => {
@@ -84,6 +90,9 @@ const RepoView = (props: RepoViewProps) => {
 
       setSelectedIndex(index);
       return false;
+    });
+    invoke("get_commit_history").then((result) => {
+      setBranchCommits(result as Commit[]);
     });
   }, []);
 
@@ -151,7 +160,12 @@ const RepoView = (props: RepoViewProps) => {
         }}
       >
         <Toolbar />
-        <Typography paragraph>Loading Repo from {repo.repoPath}</Typography>
+        {branchCommits.map((commit) => (
+          <Box sx={{ display: "flex" }}>
+            <Typography>{commit.author}</Typography>
+            <Typography>{commit.message}</Typography>
+          </Box>
+        ))}
       </Box>
     </>
   );
