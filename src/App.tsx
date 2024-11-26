@@ -8,28 +8,28 @@ import {
   Button,
   IconButton,
   Stack,
-} from "@mui/material";
-import { Add, Close } from "@mui/icons-material";
-import { ThemeProvider, createTheme, styled } from "@mui/material/styles";
-import "./App.css";
-import { ReactElement, ReactNode, SyntheticEvent, useState } from "react";
-import SimpleDialog from "./Modal";
-import RepoView from "./RepoView";
-import { open } from "@tauri-apps/api/dialog";
-import { invoke } from "@tauri-apps/api";
+} from '@mui/material';
+import { Add, Close } from '@mui/icons-material';
+import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
+import './App.css';
+import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react';
+import SimpleDialog from './Modal';
+import RepoView from './RepoView';
+import { open } from '@tauri-apps/api/dialog';
+import { invoke } from '@tauri-apps/api';
 
 interface StyledTabsProps {
   children?: ReactNode;
   value: number;
   onChange: (event: React.SyntheticEvent, newValue: number) => void;
-  scrollButtons?: boolean | "auto";
-  variant?: "scrollable" | "standard" | "fullWidth";
+  scrollButtons?: boolean | 'auto';
+  variant?: 'scrollable' | 'standard' | 'fullWidth';
 }
 
 interface StyledTabProps {
   label: string | ReactNode;
   icon?: ReactElement;
-  iconPosition?: "bottom" | "start" | "end";
+  iconPosition?: 'bottom' | 'start' | 'end';
   value: number;
 }
 
@@ -41,7 +41,7 @@ interface TabPanelProps {
 
 export interface RepoBranch {
   name: string;
-  branch_type: "Local" | "Remote";
+  branch_type: 'Local' | 'Remote';
   is_checked_out: boolean;
 }
 
@@ -52,11 +52,11 @@ export interface RepoTab {
   branchNames: RepoBranch[];
 }
 
-type RepoInitType = "Open" | "Clone" | "Create";
+type RepoInitType = 'Open' | 'Clone' | 'Create';
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: 'dark',
   },
 });
 
@@ -65,58 +65,58 @@ const TabPanel = (props: TabPanelProps) => {
 
   return (
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ display: "flex" }}>{children}</Box>}
+      {value === index && <Box sx={{ display: 'flex' }}>{children}</Box>}
     </div>
   );
 };
 const StyledTabs = styled((props: StyledTabsProps) => (
   <Tabs
     {...props}
-    TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }}
+    TabIndicatorProps={{ children: <span className='MuiTabs-indicatorSpan' /> }}
   />
 ))({
-  "& .MuiTabs-indicator": {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "transparent",
+  '& .MuiTabs-indicator': {
+    display: 'flex',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
-  "& .MuiTabs-indicatorSpan": {
-    width: "100%",
-    backgroundColor: "#635ee7",
+  '& .MuiTabs-indicatorSpan': {
+    width: '100%',
+    backgroundColor: '#635ee7',
   },
 });
 
 const StyledTab = styled((props: StyledTabProps) => (
   <Tab disableRipple {...props} />
 ))(({ theme }) => ({
-  textTransform: "none",
+  textTransform: 'none',
   fontWeight: theme.typography.fontWeightRegular,
   fontSize: theme.typography.pxToRem(15),
   marginRight: theme.spacing(1),
-  color: "rgba(255, 255, 255, 0.7)",
-  "&.Mui-selected": {
-    color: "#fff",
+  color: 'rgba(255, 255, 255, 0.7)',
+  '&.Mui-selected': {
+    color: '#fff',
   },
-  "&.Mui-focusVisible": {
-    backgroundColor: "rgba(100, 95, 228, 0.32)",
+  '&.Mui-focusVisible': {
+    backgroundColor: 'rgba(100, 95, 228, 0.32)',
   },
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+  '&:hover': {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
 }));
 
 const App = () => {
   const [selectedTab, setSelectedTab] = useState(1);
-  const [repoInitType, setRepoInitType] = useState<RepoInitType>("Open");
+  const [repoInitType, setRepoInitType] = useState<RepoInitType>('Open');
   const [showModal, setShowModal] = useState(false);
   const [tabs, setTabs] = useState<RepoTab[]>([
-    { id: 1, name: "New Tab", branchNames: [] },
+    { id: 1, name: 'New Tab', branchNames: [] },
   ]);
 
   const handleSelectedTab = (_: SyntheticEvent, newValue: number) => {
@@ -128,7 +128,7 @@ const App = () => {
       ...tabs,
       {
         id: tabs.length + 1,
-        name: "New Tab",
+        name: 'New Tab',
         branchNames: [],
       },
     ]);
@@ -163,7 +163,7 @@ const App = () => {
     });
 
     if (!Array.isArray(selectedFolder) && selectedFolder !== null) {
-      const returnedValue: RepoBranch[] = await invoke("open_repo", {
+      const returnedValue: RepoBranch[] = await invoke('open_repo', {
         path: selectedFolder,
       });
       const tabsCopy = [...tabs];
@@ -171,7 +171,7 @@ const App = () => {
 
       tabsCopy[foundIndex].branchNames = returnedValue;
       tabsCopy[foundIndex].repoPath = selectedFolder;
-      tabsCopy[foundIndex].name = selectedFolder.split("\\").pop() ?? "";
+      tabsCopy[foundIndex].name = selectedFolder.split('\\').pop() ?? '';
 
       setTabs(tabsCopy);
     }
@@ -180,7 +180,7 @@ const App = () => {
     <ThemeProvider theme={darkTheme}>
       <Box>
         <AppBar
-          position="fixed"
+          position='fixed'
           sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
         >
           <Toolbar>
@@ -188,20 +188,20 @@ const App = () => {
             <StyledTabs
               value={selectedTab}
               onChange={handleSelectedTab}
-              scrollButtons="auto"
-              variant="scrollable"
+              scrollButtons='auto'
+              variant='scrollable'
             >
               {tabs.map((x) => (
                 <StyledTab
                   value={x.id}
                   key={x.id}
                   label={
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Typography>{x.name}</Typography>
                       {tabs.length !== 1 ? (
                         <Close
-                          className="closeButton"
-                          fontSize="inherit"
+                          className='closeButton'
+                          fontSize='inherit'
                           onClick={(e) => deleteTab(e, x)}
                         />
                       ) : null}
@@ -222,38 +222,38 @@ const App = () => {
               <RepoView repo={tab} />
             ) : (
               <Box
-                component="main"
+                component='main'
                 sx={{
-                  display: "flex",
-                  height: "100vh",
-                  width: "100%",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: 'flex',
+                  height: '100vh',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <Stack spacing={2}>
                   <Button
-                    variant="outlined"
-                    color="secondary"
-                    sx={{ color: "white" }}
+                    variant='outlined'
+                    color='secondary'
+                    sx={{ color: 'white' }}
                     onClick={() => openFileBrowser(tab.id)}
                   >
                     Open Repo
                   </Button>
                   <Button
-                    variant="outlined"
-                    color="secondary"
-                    sx={{ color: "white" }}
-                    onClick={() => openModal("Clone")}
+                    variant='outlined'
+                    color='secondary'
+                    sx={{ color: 'white' }}
+                    onClick={() => openModal('Clone')}
                   >
                     Clone Repo
                   </Button>
 
                   <Button
-                    variant="outlined"
-                    color="secondary"
-                    sx={{ color: "white" }}
-                    onClick={() => openModal("Create")}
+                    variant='outlined'
+                    color='secondary'
+                    sx={{ color: 'white' }}
+                    onClick={() => openModal('Create')}
                   >
                     Create Repo
                   </Button>
@@ -263,7 +263,7 @@ const App = () => {
           </TabPanel>
         ))}
       </Box>
-      <SimpleDialog title="Repository" open={showModal} onClose={closeModal}>
+      <SimpleDialog title='Repository' open={showModal} onClose={closeModal}>
         <Typography>{repoInitType}</Typography>
       </SimpleDialog>
     </ThemeProvider>
