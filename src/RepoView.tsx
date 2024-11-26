@@ -94,7 +94,7 @@ const RepoView = (props: RepoViewProps) => {
     invoke('get_commit_history').then((result) => {
       setBranchCommits(result as Commit[]);
     });
-  }, []);
+  }, [repo.branchNames]);
 
   return (
     <>
