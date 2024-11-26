@@ -17,4 +17,9 @@ export default [
     ignores: ['node_modules', 'public', 'dist'],
   },
   eslintConfigPrettier,
+  {
+    rules: {
+      'prettier/prettier': 'warn'
+    }
+  },
 ];
