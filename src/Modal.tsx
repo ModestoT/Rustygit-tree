@@ -4,9 +4,9 @@ import {
   IconButton,
   Box,
   DialogContent,
-} from "@mui/material";
-import { ReactNode } from "react";
-import { Close } from "@mui/icons-material";
+} from '@mui/material';
+import { ReactNode } from 'react';
+import { Close } from '@mui/icons-material';
 
 interface SimpleDialogProps {
   open: boolean;
@@ -27,11 +27,11 @@ const SimpleDialog = (props: SimpleDialogProps) => {
   };
 
   return (
-    <Dialog onClose={handleClose} open={open} maxWidth="md" fullWidth>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+    <Dialog onClose={handleClose} open={open} maxWidth='md' fullWidth>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <DialogTitle>{title}</DialogTitle>
         <IconButton
-          aria-label="close"
+          aria-label='close'
           onClick={handleClose}
           sx={{
             color: (theme) => theme.palette.grey[500],

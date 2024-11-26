@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   ListItemButton,
-} from "@mui/material";
+} from '@mui/material';
 
 import {
   SellOutlined,
@@ -18,31 +18,31 @@ import {
   Inventory2Outlined,
   ViewModuleOutlined,
   CheckCircleOutline,
-} from "@mui/icons-material";
-import { RepoBranch, RepoTab } from "./App";
-import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api";
+} from '@mui/icons-material';
+import { RepoBranch, RepoTab } from './App';
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api';
 
 const drawerWidth = 180;
 const navSections = [
   {
-    label: "Local",
+    label: 'Local',
     icon: AccountTreeOutlined,
   },
   {
-    label: "Remote",
+    label: 'Remote',
     icon: CloudOutlined,
   },
   {
-    label: "Tags",
+    label: 'Tags',
     icon: SellOutlined,
   },
   {
-    label: "Stashes",
+    label: 'Stashes',
     icon: Inventory2Outlined,
   },
   {
-    label: "Submodules",
+    label: 'Submodules',
     icon: ViewModuleOutlined,
   },
 ] as const;
@@ -60,7 +60,7 @@ interface Commit {
 
 const BranchLabel = (props: {
   branch: RepoBranch;
-  section: NavSections["label"];
+  section: NavSections['label'];
   selected: boolean;
   onClick: () => void;
 }) => {
@@ -70,10 +70,10 @@ const BranchLabel = (props: {
     <ListItemButton
       selected={selected}
       onClick={onClick}
-      sx={{ paddingLeft: "6px" }}
+      sx={{ paddingLeft: '6px' }}
     >
-      {selected ? <CheckCircleOutline color="success" /> : null}
-      <ListItemText sx={{ paddingLeft: "5px" }}>{branch.name}</ListItemText>
+      {selected ? <CheckCircleOutline color='success' /> : null}
+      <ListItemText sx={{ paddingLeft: '5px' }}>{branch.name}</ListItemText>
     </ListItemButton>
   ) : null;
 };
@@ -91,7 +91,7 @@ const RepoView = (props: RepoViewProps) => {
       setSelectedIndex(index);
       return false;
     });
-    invoke("get_commit_history").then((result) => {
+    invoke('get_commit_history').then((result) => {
       setBranchCommits(result as Commit[]);
     });
   }, []);
@@ -99,42 +99,42 @@ const RepoView = (props: RepoViewProps) => {
   return (
     <>
       <Box
-        component="nav"
+        component='nav'
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
         <Drawer
-          variant="permanent"
+          variant='permanent'
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: 'none', sm: 'block' },
             [`& .MuiDrawer-paper`]: {
               width: drawerWidth,
-              boxSizing: "border-box",
+              boxSizing: 'border-box',
             },
           }}
         >
           <Toolbar />
-          <Box sx={{ overflow: "auto" }}>
+          <Box sx={{ overflow: 'auto' }}>
             <List dense>
               {navSections.map((section) => (
                 <ListItem
                   key={section.label}
                   disableGutters
-                  sx={{ flexDirection: "column" }}
+                  sx={{ flexDirection: 'column' }}
                 >
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      width: "100%",
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
                     }}
                   >
                     <ListItemIcon sx={{ minWidth: 30 }}>
                       <section.icon />
                     </ListItemIcon>
                     <ListItemText primary={section.label.toUpperCase()} />
-                    <ArrowForwardIos sx={{ fontSize: "medium" }} />
+                    <ArrowForwardIos sx={{ fontSize: 'medium' }} />
                   </div>
-                  <div style={{ width: "100%" }}>
+                  <div style={{ width: '100%' }}>
                     <List>
                       {repo.branchNames.map((branch, branchIndex) => (
                         <BranchLabel
@@ -153,7 +153,7 @@ const RepoView = (props: RepoViewProps) => {
         </Drawer>
       </Box>
       <Box
-        component="main"
+        component='main'
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
@@ -161,7 +161,7 @@ const RepoView = (props: RepoViewProps) => {
       >
         <Toolbar />
         {branchCommits.map((commit) => (
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: 'flex' }}>
             <Typography>{commit.author}</Typography>
             <Typography>{commit.message}</Typography>
           </Box>
