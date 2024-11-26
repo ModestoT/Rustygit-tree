@@ -18,6 +18,11 @@ export default [
   },
   eslintConfigPrettier,
   {
+    settings: {
+      'react': {
+        'version': 'detect',
+      }
+    },
     rules: {
       'prettier/prettier': 'warn'
     }
