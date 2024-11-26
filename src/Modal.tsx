@@ -22,10 +22,6 @@ const SimpleDialog = (props: SimpleDialogProps) => {
     onClose();
   };
 
-  const handleListItemClick = (value: string) => {
-    onClose();
-  };
-
   return (
     <Dialog onClose={handleClose} open={open} maxWidth='md' fullWidth>
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

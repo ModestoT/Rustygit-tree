@@ -138,6 +138,7 @@ const RepoView = (props: RepoViewProps) => {
                     <List>
                       {repo.branchNames.map((branch, branchIndex) => (
                         <BranchLabel
+                          key={branchIndex}
                           branch={branch}
                           section={section.label}
                           selected={selectedIndex === branchIndex}
@@ -160,8 +161,8 @@ const RepoView = (props: RepoViewProps) => {
         }}
       >
         <Toolbar />
-        {branchCommits.map((commit) => (
-          <Box sx={{ display: 'flex' }}>
+        {branchCommits.map((commit, idx) => (
+          <Box sx={{ display: 'flex' }} key={idx}>
             <Typography>{commit.author}</Typography>
             <Typography>{commit.message}</Typography>
           </Box>
