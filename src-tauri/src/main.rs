@@ -1,10 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use git2::{BranchType, Oid, Repository, Sort};
+use git2::{BranchType, Repository, Sort};
 use serde::Serialize;
 use std::sync::Mutex;
-use tauri::{utils::config::GlobalShortcutAllowlistConfig, State};
+use tauri::State;
 
 struct GitRepo {
     path: String,
@@ -76,8 +76,8 @@ impl GitRepo {
         let mut rev_walk = repo.revwalk().unwrap();
         let mut commit_history = Vec::new();
 
-        rev_walk.set_sorting(Sort::TIME);
-        rev_walk.push_head();
+        let _ = rev_walk.set_sorting(Sort::TIME);
+        let _ = rev_walk.push_head();
 
         for commit_id in rev_walk {
             let id = commit_id.unwrap();
