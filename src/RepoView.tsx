@@ -21,7 +21,7 @@ import {
 } from '@mui/icons-material';
 import { RepoBranch, RepoTab } from './App';
 import { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 const drawerWidth = 180;
 const navSections = [

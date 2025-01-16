@@ -15,8 +15,8 @@ import './App.css';
 import { ReactElement, ReactNode, SyntheticEvent, useState } from 'react';
 import SimpleDialog from './Modal';
 import RepoView from './RepoView';
-import { open } from '@tauri-apps/api/dialog';
-import { invoke } from '@tauri-apps/api';
+import { open } from '@tauri-apps/plugin-dialog';
+import { invoke } from '@tauri-apps/api/core';
 
 interface StyledTabsProps {
   children?: ReactNode;

@@ -117,6 +117,8 @@ fn get_commit_history(state: State<Mutex<GitRepo>>) -> Result<Vec<BranchCommit>,
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(GitRepo {
             path: "".into(),
             repo: None,
